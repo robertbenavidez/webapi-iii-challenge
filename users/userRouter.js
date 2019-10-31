@@ -1,4 +1,4 @@
-const express = ('express');
+const express = require('express');
 
 const router = express.Router();
 
@@ -15,14 +15,37 @@ router.post('/:id/posts', (req, res) => {
 
 router.get('/', (req, res) => {
 
+    Users.get()
+        .then(users => {
+            res.status(200).json(users)
+        })
+        .catch(error => {
+            res.status(500).json({ message: "unable to retrieve user"})
+        });
 });
 
-router.get('/:id', (req, res) => {
-
+router.get('/:id',validateUserId, (req, res) => {
+    const id = req.params.id;
+    Users.getById(id)
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(error => {
+            res.status(500).json({ message: "unable to retrieve user"})
+        })
+        
 });
 
-router.get('/:id/posts', (req, res) => {
+router.get('/:id/posts',validateUserId, (req, res) => {
+    const userId = req.params.id
 
+    Users.getUserPosts(userId)
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(error => {
+            res.status(500).json({ message: "unable to retrieve user"})
+        })
 });
 
 router.delete('/:id', (req, res) => {
