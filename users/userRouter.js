@@ -5,8 +5,16 @@ const router = express.Router();
 const Users = require('./userDb');
 const Posts = require('../posts/postDb');
 
-router.post('/', (req, res) => {
+router.post('/',validateUser, (req, res) => {
+    const newUser = req.body
 
+    Users.insert(newUser)
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(error => {
+            res.status(500).json({ message: "unable create new user"})
+        });
 });
 
 router.post('/:id/posts', (req, res) => {
@@ -48,11 +56,29 @@ router.get('/:id/posts',validateUserId, (req, res) => {
         })
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id',validateUserId, (req, res) => {
+    const id = req.params.id;
 
+    Users.remove(id)
+        .then(deleted => {
+            res.status(200).json(deleted)
+        })
+        .catch(error => { 
+            res.status(500).json({ message: 'unable to delete user'})
+        })
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id',validateUserId, (req, res) => {
+    const id = req.params.id;
+    const changes = req.body;
+
+    Users.update(id, changes)
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(error => {
+            res.status(500).json({ message: "Unable to update user"})
+        })
 
 });
 
